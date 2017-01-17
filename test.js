@@ -65,8 +65,28 @@ describe ('ansicolor', () => {
         assert.deepEqual (parsed.browserConsoleArguments, [
             "%cfoo%cbar%cbaz",
             "",
-            "font-weight: bold;font-style: underline;background:rgba(255,51,0,1);color:rgba(0,204,0,1);",
+            "font-weight:bold;text-decoration:underline;background:rgba(255,51,0,1);color:rgba(0,204,0,1);",
             "background:rgba(0,204,0,1);"
         ])
+    })
+
+    it ('HTML export works', () => {
+        same(
+            color.parse('foo' + ('bar'.red.underline.bright.inverse + 'baz').bgGreen).html(),
+            '<span>\n<span>foo</span><span style="font-weight:bold;text-decoration:underline;background:rgba(255,51,0,1);color:rgba(0,204,0,1);">bar</span><span style="background:rgba(0,204,0,1);">baz</span>\n</span>'
+        );
+    })
+
+    it ('Themed HTML export works', () => {
+        color.setTheme({
+            serious: ['background:rgba(255,51,0,1)', 'underline', 'bold'],
+            ok: ['background:rgba(0,204,0,1)']
+        });
+        // 'foo' + ('bar'.red.underline.bright.inverse + 'baz').bgGreen
+        console.log('foo' + ('bar'.serious + 'baz').ok);
+        same(
+            color.parse('foo' + ('bar'.serious + 'baz').ok).html({theme: true}),
+            '<span>\n<span>foo</span><span style="font-weight:bold;text-decoration:underline;background:rgba(255,51,0,1);color:rgba(0,204,0,1);">bar</span><span style="background:rgba(0,204,0,1);">baz</span>\n</span>'
+        );
     })
 })
